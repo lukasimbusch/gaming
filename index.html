@@ -1,256 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Game Portal</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
 
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{--accent:#7F77DD;--dark:#0d0d14;--card:#1a1a28;--border:rgba(127,119,221,0.2);--text:#f0eeff;--muted:rgba(240,238,255,0.4)}
-body,html{font-family:var(--font-sans)}
-.site{background:var(--dark);color:var(--text);padding-bottom:16px}
-.nav{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:0.5px solid var(--border);background:#13131e;margin-bottom:14px}
-.logo{font-size:14px;font-weight:500;letter-spacing:0.05em;display:flex;align-items:center;gap:7px}
-.gem{width:12px;height:12px;background:var(--accent);border-radius:3px;transform:rotate(45deg)}
-.pill{background:rgba(127,119,221,0.1);border:0.5px solid var(--border);border-radius:20px;padding:3px 10px;font-size:11px;color:var(--muted)}
-.pill b{color:var(--text);font-weight:500}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 12px}
-.card{background:var(--card);border:0.5px solid var(--border);border-radius:10px;overflow:hidden}
-.ctop{padding:8px 10px 6px;display:flex;align-items:center;justify-content:space-between}
-.ctitle{font-size:12px;font-weight:500}
-.badge{font-size:9px;padding:1px 6px;border-radius:20px}
-.ba{background:rgba(127,119,221,0.2);color:#AFA9EC}
-.bc2{background:rgba(239,159,39,0.15);color:#EF9F27}
-.bp{background:rgba(29,158,117,0.15);color:#5DCAA5}
-.cwrap{position:relative;background:#080810}
-canvas{display:block;width:100%;image-rendering:pixelated}
-.ov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;background:rgba(8,8,16,0.88)}
-.ov-t{font-size:12px;font-weight:500}
-.ov-s{font-size:10px;color:var(--muted);text-align:center;line-height:1.4;max-width:110px}
-.pbtn{background:var(--accent);color:#fff;border:none;border-radius:6px;padding:5px 14px;font-size:11px;font-weight:500;cursor:pointer;font-family:var(--font-sans)}
-.pbtn:hover{background:#534AB7}
-.cfoot{padding:6px 10px;display:flex;align-items:center;justify-content:space-between;border-top:0.5px solid var(--border)}
-.bst{font-size:10px;color:var(--muted)}
-.bst span{color:var(--text);font-weight:500}
-.fsbtn{background:none;border:0.5px solid var(--border);border-radius:5px;color:var(--muted);cursor:pointer;padding:2px 6px;font-size:10px;font-family:var(--font-sans);display:flex;align-items:center;gap:3px}
-.fsbtn:hover{color:var(--accent);border-color:var(--accent)}
+    <header class="navbar">
+        <div class="logo">GamePortal</div>
+        <nav>
+            <a href="index.html" class="active">Home</a>
+            <a href="arcade.html">Arcade</a>
+        </nav>
+    </header>
 
-.modal{position:absolute;inset:0;background:#09090f;display:none;flex-direction:column;z-index:999;border-radius:10px}
-.modal.open{display:flex}
-.mhead{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:0.5px solid var(--border);flex-shrink:0}
-.mtitle{font-size:13px;font-weight:500}
-.mmeta{display:flex;gap:10px;font-size:11px;color:var(--muted)}
-.mmeta b{color:var(--text)}
-.xbtn{background:none;border:0.5px solid var(--border);border-radius:5px;color:var(--muted);cursor:pointer;padding:2px 8px;font-size:11px;font-family:var(--font-sans)}
-.xbtn:hover{color:var(--text)}
-.mcwrap{flex:1;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:6px}
-.mcwrap canvas{image-rendering:pixelated;max-width:100%;max-height:100%;display:block}
-.mov{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(8,8,16,0.92)}
-.mov.show{display:flex}
-.mfoot{padding:5px 12px;border-top:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;font-size:10px;color:var(--muted)}
-.lives{display:flex;gap:3px}
-.ld{width:6px;height:6px;border-radius:50%;background:var(--accent)}
-.ld.e{background:rgba(127,119,221,0.2)}
-</style>
+    <main class="container">
+        <h2>Featured Games</h2>
+        <div class="game-grid">
+            <div class="game-card">
+                <div class="thumbnail-placeholder">Game 1 Thumbnail</div>
+                <h3>Space Adventure</h3>
+                <p>Explore the stars in this text adventure.</p>
+                <a href="arcade.html?game=space" class="play-btn">Play Now</a>
+            </div>
 
-<div class="site" id="site">
-<nav class="nav">
-  <div class="logo"><div class="gem"></div>PIXELZONE</div>
-  <div class="pill">Score <b id="total">0</b></div>
-</nav>
-<div class="grid">
-  <div class="card">
-    <div class="ctop"><span class="ctitle">Snake</span><span class="badge ba">Action</span></div>
-    <div class="cwrap" style="height:120px"><canvas id="sc" width="180" height="120"></canvas>
-      <div class="ov" id="so"><div class="ov-t">Snake</div><div class="ov-s">Eat dots, don't bite yourself</div><button class="pbtn" onclick="openFS('snake')">Play</button></div>
-    </div>
-    <div class="cfoot"><div class="bst">Best <span id="sb">0</span></div><button class="fsbtn" onclick="openFS('snake')"><i class="ti ti-maximize" style="font-size:11px" aria-hidden="true"></i> Full</button></div>
-  </div>
-  <div class="card">
-    <div class="ctop"><span class="ctitle">Tetris</span><span class="badge bc2">Classic</span></div>
-    <div class="cwrap" style="height:120px"><canvas id="tc" width="90" height="120"></canvas>
-      <div class="ov" id="to"><div class="ov-t">Tetris</div><div class="ov-s">Clear lines before the top fills up</div><button class="pbtn" onclick="openFS('tetris')">Play</button></div>
-    </div>
-    <div class="cfoot"><div class="bst">Best <span id="tb">0</span></div><button class="fsbtn" onclick="openFS('tetris')"><i class="ti ti-maximize" style="font-size:11px" aria-hidden="true"></i> Full</button></div>
-  </div>
-  <div class="card">
-    <div class="ctop"><span class="ctitle">Breakout</span><span class="badge bp">Puzzle</span></div>
-    <div class="cwrap" style="height:120px"><canvas id="bc" width="180" height="120"></canvas>
-      <div class="ov" id="bo"><div class="ov-t">Breakout</div><div class="ov-s">Smash all bricks with the ball</div><button class="pbtn" onclick="openFS('breakout')">Play</button></div>
-    </div>
-    <div class="cfoot"><div class="bst">Best <span id="bb">0</span></div><button class="fsbtn" onclick="openFS('breakout')"><i class="ti ti-maximize" style="font-size:11px" aria-hidden="true"></i> Full</button></div>
-  </div>
-</div>
+            <div class="game-card">
+                <div class="thumbnail-placeholder">Game 2 Thumbnail</div>
+                <h3>Clicker Mania</h3>
+                <p>Click your way to the top leaderboard.</p>
+                <a href="arcade.html?game=clicker" class="play-btn">Play Now</a>
+            </div>
+        </div>
+    </main>
 
-<div class="modal" id="modal">
-  <div class="mhead">
-    <div class="mtitle" id="mtitle">Game</div>
-    <div class="mmeta"><span>Score <b id="ms">0</b></span><span>Best <b id="mb">0</b></span><div class="lives" id="mlives"></div></div>
-    <button class="xbtn" onclick="closeFS()">✕ Close</button>
-  </div>
-  <div class="mcwrap" id="mcwrap">
-    <canvas id="fsc"></canvas>
-    <div class="mov" id="mov">
-      <div class="ov-t" id="movt">Game over</div>
-      <div class="ov-s" id="movs"></div>
-      <button class="pbtn" id="mpbtn">Play again</button>
-    </div>
-  </div>
-  <div class="mfoot"><span id="mctrl">← → move · ↑ rotate · Space drop</span><span id="mlvl"></span></div>
-</div>
-</div>
-
-<script>
-const $=id=>document.getElementById(id);
-let bS=0,bT=0,bB=0,aGame=null,aLoop=null;
-function tot(){$('total').textContent=bS+bT+bB}
-function setMS(v){$('ms').textContent=v}
-function setMB(v){$('mb').textContent=v}
-function showOver(t,s){$('movt').textContent=t;$('movs').textContent=s;$('mov').classList.add('show')}
-
-function openFS(g){
-  $('modal').classList.add('open');
-  $('mov').classList.remove('show');
-  aGame=g;
-  $('mtitle').textContent={snake:'Snake',tetris:'Tetris',breakout:'Breakout'}[g];
-  $('mpbtn').onclick=()=>{$('mov').classList.remove('show');launch(g)};
-  $('mctrl').textContent={snake:'WASD or arrow keys',tetris:'← → move · ↑ rotate · ↓ drop · Space hard drop',breakout:'Mouse or ← → keys'}[g];
-  $('mlives').innerHTML='';$('mlvl').textContent='';
-  launch(g);
-}
-function closeFS(){
-  $('modal').classList.remove('open');
-  if(aLoop){cancelAnimationFrame(aLoop);aLoop=null}
-  $('fsc').onmousemove=null;document.onkeydown=null;aGame=null;
-}
-function launch(g){
-  if(aLoop){cancelAnimationFrame(aLoop);aLoop=null}
-  if(g==='snake')snake();
-  if(g==='tetris')tetris();
-  if(g==='breakout')breakout();
-}
-
-function snake(){
-  const wrap=$('mcwrap'),SZ=14,COLS=24,ROWS=18;
-  const W=COLS*SZ,H=ROWS*SZ;
-  const c=$('fsc');c.width=W;c.height=H;
-  const ctx=c.getContext('2d');
-  let s=[{x:12,y:9}],dir={x:1,y:0},nd={x:1,y:0},food=rf(),score=0,alive=true,fr=0;
-  function rf(){let f;do{f={x:Math.floor(Math.random()*COLS),y:Math.floor(Math.random()*ROWS)}}while(s.some(p=>p.x===f.x&&p.y===f.y));return f}
-  setMS(0);setMB(bS);$('mlives').innerHTML='';$('mlvl').textContent='';
-  function draw(){
-    ctx.fillStyle='#080810';ctx.fillRect(0,0,W,H);
-    s.forEach((p,i)=>{
-      ctx.fillStyle=i===0?'#7F77DD':`rgba(83,74,183,${Math.max(0.3,1-i*0.05)})`;
-      ctx.beginPath();ctx.roundRect(p.x*SZ+1,p.y*SZ+1,SZ-2,SZ-2,3);ctx.fill();
-    });
-    ctx.fillStyle='#5DCAA5';ctx.beginPath();ctx.arc(food.x*SZ+SZ/2,food.y*SZ+SZ/2,SZ/2-1,0,Math.PI*2);ctx.fill();
-  }
-  function tick(){
-    if(!alive)return;fr++;
-    if(fr%Math.max(3,7-Math.floor(score/8))!==0){draw();aLoop=requestAnimationFrame(tick);return}
-    dir={...nd};
-    const h={x:s[0].x+dir.x,y:s[0].y+dir.y};
-    if(h.x<0||h.x>=COLS||h.y<0||h.y>=ROWS||s.some(p=>p.x===h.x&&p.y===h.y)){
-      alive=false;if(score>bS){bS=score;$('sb').textContent=bS;setMB(bS);tot()}
-      showOver('Game over — '+score+' pts','Length: '+s.length);return;
-    }
-    s.unshift(h);
-    if(h.x===food.x&&h.y===food.y){score++;food=rf();setMS(score)}else s.pop();
-    draw();aLoop=requestAnimationFrame(tick);
-  }
-  document.onkeydown=e=>{
-    const k=e.key;
-    if((k==='ArrowLeft'||k==='a'||k==='A')&&dir.x!==1)nd={x:-1,y:0};
-    if((k==='ArrowRight'||k==='d'||k==='D')&&dir.x!==-1)nd={x:1,y:0};
-    if((k==='ArrowUp'||k==='w'||k==='W')&&dir.y!==1)nd={x:0,y:-1};
-    if((k==='ArrowDown'||k==='s'||k==='S')&&dir.y!==-1)nd={x:0,y:1};
-    if(k.startsWith('Arrow'))e.preventDefault();
-  };
-  aLoop=requestAnimationFrame(tick);
-}
-
-function tetris(){
-  const wrap=$('mcwrap');
-  const COLS=10,ROWS=16;
-  const avW=wrap.clientWidth-16,avH=wrap.clientHeight-12;
-  const BS=Math.max(12,Math.min(Math.floor(avW/COLS),Math.floor(avH/ROWS)));
-  const W=COLS*BS,H=ROWS*BS;
-  const c=$('fsc');c.width=W;c.height=H;
-  const ctx=c.getContext('2d');
-  const SH=[[[1,1,1,1]],[[1,1],[1,1]],[[0,1,0],[1,1,1]],[[1,0,0],[1,1,1]],[[0,0,1],[1,1,1]],[[1,1,0],[0,1,1]],[[0,1,1],[1,1,0]]];
-  const CL=['#378ADD','#FAC775','#7F77DD','#D4537E','#5DCAA5','#E24B4A','#97C459'];
-  let board=Array.from({length:ROWS},()=>Array(COLS).fill(0));
-  let cb=Array.from({length:ROWS},()=>Array(COLS).fill(null));
-  let score=0,level=1,alive=true,dt=0,lt=0,iv=600;
-  setMS(0);setMB(bT);$('mlives').innerHTML='';$('mlvl').textContent='Lv 1';
-  function np(){const i=Math.floor(Math.random()*SH.length);return{s:SH[i],c:CL[i],x:Math.floor(COLS/2)-1,y:0}}
-  let cur=np();
-  function ok(s,ox,oy){return s.every((r,ry)=>r.every((v,rx)=>!v||(ox+rx>=0&&ox+rx<COLS&&oy+ry<ROWS&&(oy+ry<0||!board[oy+ry][ox+rx]))))}
-  function place(){
-    cur.s.forEach((r,ry)=>r.forEach((v,rx)=>{if(v&&cur.y+ry>=0){board[cur.y+ry][cur.x+rx]=1;cb[cur.y+ry][cur.x+rx]=cur.c}}));
-    let cl=0;
-    for(let r=ROWS-1;r>=0;r--){if(board[r].every(v=>v)){board.splice(r,1);board.unshift(Array(COLS).fill(0));cb.splice(r,1);cb.unshift(Array(COLS).fill(null));cl++;r++}}
-    score+=cl*100*level;level=1+Math.floor(score/800);iv=Math.max(100,600-level*55);
-    setMS(score);$('mlvl').textContent='Lv '+level;
-    cur=np();
-    if(!ok(cur.s,cur.x,cur.y)){alive=false;if(score>bT){bT=score;$('tb').textContent=bT;setMB(bT);tot()}showOver('Game over — '+score+' pts','Level '+level)}
-  }
-  function gy(){let y=cur.y;while(ok(cur.s,cur.x,y+1))y++;return y}
-  function draw(){
-    ctx.fillStyle='#080810';ctx.fillRect(0,0,W,H);
-    board.forEach((r,ry)=>r.forEach((v,rx)=>{if(v){ctx.fillStyle=cb[ry][rx];ctx.beginPath();ctx.roundRect(rx*BS+1,ry*BS+1,BS-2,BS-2,2);ctx.fill()}}));
-    const g=gy();
-    cur.s.forEach((r,ry)=>r.forEach((v,rx)=>{if(v&&cur.y+ry>=0){ctx.fillStyle='rgba(127,119,221,0.18)';ctx.beginPath();ctx.roundRect((cur.x+rx)*BS+1,(g+ry)*BS+1,BS-2,BS-2,2);ctx.fill()}}));
-    cur.s.forEach((r,ry)=>r.forEach((v,rx)=>{if(v&&cur.y+ry>=0){ctx.fillStyle=cur.c;ctx.beginPath();ctx.roundRect((cur.x+rx)*BS+1,(cur.y+ry)*BS+1,BS-2,BS-2,2);ctx.fill()}}));
-  }
-  function loop(ts){
-    if(!alive)return;const d=ts-lt;lt=ts;dt+=d;
-    if(dt>iv){dt=0;if(ok(cur.s,cur.x,cur.y+1))cur.y++;else place()}
-    draw();aLoop=requestAnimationFrame(loop);
-  }
-  document.onkeydown=e=>{
-    if(e.key==='ArrowLeft'&&ok(cur.s,cur.x-1,cur.y))cur.x--;
-    if(e.key==='ArrowRight'&&ok(cur.s,cur.x+1,cur.y))cur.x++;
-    if(e.key==='ArrowDown'){if(ok(cur.s,cur.x,cur.y+1))cur.y++;else place()}
-    if(e.key==='ArrowUp'){const r=cur.s[0].map((_,i)=>cur.s.map(row=>row[i]).reverse());if(ok(r,cur.x,cur.y))cur.s=r}
-    if(e.key===' '){while(ok(cur.s,cur.x,cur.y+1))cur.y++;place()}
-    if(e.key.startsWith('Arrow')||e.key===' ')e.preventDefault();
-  };
-  aLoop=requestAnimationFrame(loop);
-}
-
-function breakout(){
-  const wrap=$('mcwrap');
-  const W=Math.min(wrap.clientWidth-16,360),H=Math.min(wrap.clientHeight-12,280);
-  const c=$('fsc');c.width=W;c.height=H;
-  const ctx=c.getContext('2d');
-  const BC=9,BR=4,BW=(W-18)/BC-2,BH=11;
-  const BCOL=['#E24B4A','#D4537E','#FAC775','#5DCAA5'];
-  let bricks=[];
-  function mk(){bricks=[];for(let r=0;r<BR;r++)for(let col=0;col<BC;col++)bricks.push({x:col*(BW+2)+9,y:r*13+36,w:BW,h:BH,alive:true,color:BCOL[r]})}
-  mk();
-  let pad={x:W/2-35,y:H-18,w:70,h:8},ball={x:W/2,y:H-40,vx:2.5,vy:-3},score=0,lives=3,alive=true;
-  setMS(0);setMB(bB);
-  function rl(){$('mlives').innerHTML=Array.from({length:3},(_,i)=>`<div class="ld${i>=lives?' e':''}"></div>`).join('')}rl();
-  c.onmousemove=e=>{const r=c.getBoundingClientRect();pad.x=Math.min(W-pad.w,Math.max(0,(e.clientX-r.left)*(W/r.width)-pad.w/2))};
-  function draw(){
-    ctx.fillStyle='#080810';ctx.fillRect(0,0,W,H);
-    bricks.forEach(b=>{if(!b.alive)return;ctx.fillStyle=b.color;ctx.beginPath();ctx.roundRect(b.x,b.y,b.w,b.h,2);ctx.fill()});
-    ctx.fillStyle='#7F77DD';ctx.beginPath();ctx.roundRect(pad.x,pad.y,pad.w,pad.h,4);ctx.fill();
-    ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(ball.x,ball.y,5,0,Math.PI*2);ctx.fill();
-  }
-  function tick(){
-    if(!alive)return;
-    ball.x+=ball.vx;ball.y+=ball.vy;
-    if(ball.x<5||ball.x>W-5){ball.vx*=-1;ball.x=ball.x<5?5:W-5}
-    if(ball.y<5)ball.vy=Math.abs(ball.vy);
-    if(ball.y>H+8){lives--;rl();if(lives<=0){alive=false;if(score>bB){bB=score;$('bb').textContent=bB;setMB(bB);tot()}showOver('Game over — '+score+' pts','');c.onmousemove=null;return}ball={x:W/2,y:H-45,vx:2.5*(Math.random()>.5?1:-1),vy:-3}}
-    if(ball.y+5>pad.y&&ball.y<pad.y+pad.h&&ball.x>pad.x&&ball.x<pad.x+pad.w){ball.vy=-Math.abs(ball.vy);ball.vx+=((ball.x-(pad.x+pad.w/2))/pad.w)*3;ball.vx=Math.max(-4.5,Math.min(4.5,ball.vx))}
-    bricks.forEach(b=>{if(!b.alive)return;if(ball.x>b.x-4&&ball.x<b.x+b.w+4&&ball.y>b.y-4&&ball.y<b.y+b.h+4){b.alive=false;score+=10;setMS(score);ball.vy*=-1}});
-    if(bricks.every(b=>!b.alive)){mk();ball.vy=-(Math.abs(ball.vy)+0.2)}
-    draw();aLoop=requestAnimationFrame(tick);
-  }
-  document.onkeydown=e=>{
-    if(e.key==='ArrowLeft')pad.x=Math.max(0,pad.x-16);
-    if(e.key==='ArrowRight')pad.x=Math.min(W-pad.w,pad.x+16);
-    if(e.key.startsWith('Arrow'))e.preventDefault();
-  };
-  aLoop=requestAnimationFrame(tick);
-}
-</script>
+</body>
+</html>
