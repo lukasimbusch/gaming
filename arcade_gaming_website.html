@@ -1,0 +1,334 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans)}
+.site{min-height:100vh;background:var(--color-background-tertiary)}
+.nav{background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:100}
+.logo{font-size:18px;font-weight:500;color:var(--color-text-primary);display:flex;align-items:center;gap:8px}
+.logo-dot{width:10px;height:10px;border-radius:50%;background:#7F77DD}
+.nav-right{display:flex;align-items:center;gap:12px}
+.score-pill{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:20px;padding:4px 12px;font-size:13px;color:var(--color-text-secondary)}
+.score-pill span{color:var(--color-text-primary);font-weight:500}
+.hero{padding:2rem 1.5rem 1.5rem;text-align:center}
+.hero h1{font-size:28px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px}
+.hero p{font-size:15px;color:var(--color-text-secondary)}
+.game-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;padding:0 1.5rem 2rem;max-width:1000px;margin:0 auto}
+.game-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;cursor:pointer;transition:border-color 0.15s}
+.game-card:hover{border-color:var(--color-border-primary)}
+.game-header{padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between}
+.game-title{font-size:14px;font-weight:500;color:var(--color-text-primary)}
+.game-badge{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500}
+.badge-action{background:#EEEDFE;color:#3C3489}
+.badge-puzzle{background:#E1F5EE;color:#085041}
+.badge-classic{background:#FAEEDA;color:#633806}
+.game-canvas-wrap{position:relative;background:#0a0a0f}
+canvas{display:block;width:100%;image-rendering:pixelated}
+.game-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(10,10,15,0.88);gap:10px}
+.play-btn{background:#7F77DD;color:#fff;border:none;border-radius:var(--border-radius-md);padding:8px 20px;font-size:14px;font-weight:500;cursor:pointer;font-family:var(--font-sans)}
+.play-btn:hover{background:#534AB7}
+.overlay-title{color:#fff;font-size:13px;font-weight:500}
+.overlay-sub{color:rgba(255,255,255,0.5);font-size:12px}
+.game-footer{padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-top:0.5px solid var(--color-border-tertiary)}
+.best-score{font-size:12px;color:var(--color-text-secondary)}
+.best-score span{color:var(--color-text-primary);font-weight:500}
+.controls-hint{font-size:11px;color:var(--color-text-tertiary)}
+.dark-check{display:none}
+@media(prefers-color-scheme:dark){
+  .badge-action{background:#3C3489;color:#CECBF6}
+  .badge-puzzle{background:#085041;color:#9FE1CB}
+  .badge-classic{background:#633806;color:#FAC775}
+}
+</style>
+
+<div class="site">
+  <nav class="nav">
+    <div class="logo"><div class="logo-dot"></div>PIXELZONE</div>
+    <div class="nav-right">
+      <div class="score-pill">Total score: <span id="total-score">0</span></div>
+    </div>
+  </nav>
+  <div class="hero">
+    <h1>Pick a game, start playing</h1>
+    <p>Three classics, zero downloads, all in your browser</p>
+  </div>
+  <div class="game-grid">
+
+    <!-- SNAKE -->
+    <div class="game-card">
+      <div class="game-header">
+        <span class="game-title">Snake</span>
+        <span class="game-badge badge-action">Action</span>
+      </div>
+      <div class="game-canvas-wrap" style="height:240px">
+        <canvas id="snake-canvas" width="300" height="240"></canvas>
+        <div class="game-overlay" id="snake-overlay">
+          <div class="overlay-title" id="snake-msg">Snake</div>
+          <div class="overlay-sub" id="snake-sub">Eat the dots, don't bite yourself</div>
+          <button class="play-btn" onclick="startSnake()">Play</button>
+        </div>
+      </div>
+      <div class="game-footer">
+        <div class="best-score">Best: <span id="snake-best">0</span></div>
+        <div class="controls-hint">Arrow keys or WASD</div>
+      </div>
+    </div>
+
+    <!-- TETRIS -->
+    <div class="game-card">
+      <div class="game-header">
+        <span class="game-title">Tetris</span>
+        <span class="game-badge badge-classic">Classic</span>
+      </div>
+      <div class="game-canvas-wrap" style="height:240px">
+        <canvas id="tetris-canvas" width="150" height="240"></canvas>
+        <div class="game-overlay" id="tetris-overlay">
+          <div class="overlay-title" id="tetris-msg">Tetris</div>
+          <div class="overlay-sub" id="tetris-sub">Clear lines before the stack fills up</div>
+          <button class="play-btn" onclick="startTetris()">Play</button>
+        </div>
+      </div>
+      <div class="game-footer">
+        <div class="best-score">Best: <span id="tetris-best">0</span></div>
+        <div class="controls-hint">← → to move, ↑ rotate, ↓ drop</div>
+      </div>
+    </div>
+
+    <!-- BREAKOUT -->
+    <div class="game-card">
+      <div class="game-header">
+        <span class="game-title">Breakout</span>
+        <span class="game-badge badge-puzzle">Puzzle</span>
+      </div>
+      <div class="game-canvas-wrap" style="height:240px">
+        <canvas id="breakout-canvas" width="300" height="240"></canvas>
+        <div class="game-overlay" id="breakout-overlay">
+          <div class="overlay-title" id="breakout-msg">Breakout</div>
+          <div class="overlay-sub" id="breakout-sub">Smash all the bricks with your ball</div>
+          <button class="play-btn" onclick="startBreakout()">Play</button>
+        </div>
+      </div>
+      <div class="game-footer">
+        <div class="best-score">Best: <span id="breakout-best">0</span></div>
+        <div class="controls-hint">Mouse or ← → keys</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const totalScoreEl=document.getElementById('total-score');
+let snakeBest=0,tetrisBest=0,breakoutBest=0;
+function updateTotal(){totalScoreEl.textContent=snakeBest+tetrisBest+breakoutBest}
+
+/* ======================== SNAKE ======================== */
+let snakeGame=null;
+function startSnake(){
+  document.getElementById('snake-overlay').style.display='none';
+  const canvas=document.getElementById('snake-canvas');
+  const ctx=canvas.getContext('2d');
+  const W=300,H=240,SZ=15;
+  const COLS=W/SZ,ROWS=H/SZ;
+  let snake=[{x:10,y:10}],dir={x:1,y:0},nextDir={x:1,y:0};
+  let food=randomFood(),score=0,alive=true,frame=0;
+  function randomFood(){
+    let f;
+    do{f={x:Math.floor(Math.random()*COLS),y:Math.floor(Math.random()*ROWS)}}
+    while(snake.some(s=>s.x===f.x&&s.y===f.y));
+    return f;
+  }
+  function draw(){
+    ctx.fillStyle='#0a0a0f';ctx.fillRect(0,0,W,H);
+    snake.forEach((s,i)=>{
+      ctx.fillStyle=i===0?'#7F77DD':'#534AB7';
+      ctx.beginPath();ctx.roundRect(s.x*SZ+1,s.y*SZ+1,SZ-2,SZ-2,3);ctx.fill();
+    });
+    ctx.fillStyle='#5DCAA5';
+    ctx.beginPath();ctx.arc(food.x*SZ+SZ/2,food.y*SZ+SZ/2,SZ/2-1,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font='12px sans-serif';
+    ctx.fillText('Score: '+score,8,16);
+  }
+  function tick(){
+    if(!alive)return;
+    frame++;
+    if(frame%(Math.max(4,8-Math.floor(score/5)))!==0){draw();snakeLoop=requestAnimationFrame(tick);return;}
+    dir=nextDir;
+    const head={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
+    if(head.x<0||head.x>=COLS||head.y<0||head.y>=ROWS||snake.some(s=>s.x===head.x&&s.y===head.y)){
+      alive=false;
+      if(score>snakeBest){snakeBest=score;document.getElementById('snake-best').textContent=snakeBest;updateTotal();}
+      const ov=document.getElementById('snake-overlay');
+      document.getElementById('snake-msg').textContent='Game over — '+score+' pts';
+      document.getElementById('snake-sub').textContent='';
+      ov.style.display='flex';return;
+    }
+    snake.unshift(head);
+    if(head.x===food.x&&head.y===food.y){score++;food=randomFood();}
+    else snake.pop();
+    draw();snakeLoop=requestAnimationFrame(tick);
+  }
+  if(snakeLoop)cancelAnimationFrame(snakeLoop);
+  document.onkeydown=(e)=>{
+    if(['ArrowLeft','a','A'].includes(e.key)&&dir.x!==1)nextDir={x:-1,y:0};
+    if(['ArrowRight','d','D'].includes(e.key)&&dir.x!==-1)nextDir={x:1,y:0};
+    if(['ArrowUp','w','W'].includes(e.key)&&dir.y!==1)nextDir={x:0,y:-1};
+    if(['ArrowDown','s','S'].includes(e.key)&&dir.y!==-1)nextDir={x:0,y:1};
+  };
+  snakeLoop=requestAnimationFrame(tick);
+}
+let snakeLoop;
+
+/* ======================== TETRIS ======================== */
+let tetrisLoop;
+function startTetris(){
+  document.getElementById('tetris-overlay').style.display='none';
+  const canvas=document.getElementById('tetris-canvas');
+  const ctx=canvas.getContext('2d');
+  const W=150,H=240,BS=15,COLS=10,ROWS=16;
+  const PIECES=[
+    [[1,1,1,1]],
+    [[1,1],[1,1]],
+    [[0,1,0],[1,1,1]],
+    [[1,0,0],[1,1,1]],
+    [[0,0,1],[1,1,1]],
+    [[1,1,0],[0,1,1]],
+    [[0,1,1],[1,1,0]]
+  ];
+  const COLORS=['#378ADD','#FAC775','#7F77DD','#D4537E','#5DCAA5','#E24B4A','#97C459'];
+  let board=Array.from({length:ROWS},()=>Array(COLS).fill(0));
+  let colorBoard=Array.from({length:ROWS},()=>Array(COLS).fill(null));
+  let score=0,alive=true,dropTimer=0,dropInterval=500,lastTime=0;
+  function newPiece(){
+    const idx=Math.floor(Math.random()*PIECES.length);
+    return{shape:PIECES[idx],color:COLORS[idx],x:Math.floor(COLS/2)-1,y:0};
+  }
+  let cur=newPiece(),next=newPiece();
+  function valid(s,ox,oy){
+    return s.every((r,ry)=>r.every((c,rx)=>!c||
+      (s[ry][rx]&&ox+rx>=0&&ox+rx<COLS&&oy+ry<ROWS&&(oy+ry<0||!board[oy+ry][ox+rx]))));
+  }
+  function place(){
+    cur.shape.forEach((r,ry)=>r.forEach((c,rx)=>{
+      if(c&&cur.y+ry>=0){board[cur.y+ry][cur.x+rx]=1;colorBoard[cur.y+ry][cur.x+rx]=cur.color;}
+    }));
+    let cleared=0;
+    for(let r=ROWS-1;r>=0;r--){
+      if(board[r].every(c=>c)){board.splice(r,1);board.unshift(Array(COLS).fill(0));colorBoard.splice(r,1);colorBoard.unshift(Array(COLS).fill(null));cleared++;r++;}
+    }
+    score+=cleared*100;
+    cur=next;next=newPiece();
+    if(!valid(cur.shape,cur.x,cur.y)){
+      alive=false;
+      if(score>tetrisBest){tetrisBest=score;document.getElementById('tetris-best').textContent=tetrisBest;updateTotal();}
+      document.getElementById('tetris-msg').textContent='Game over — '+score+' pts';
+      document.getElementById('tetris-sub').textContent='';
+      document.getElementById('tetris-overlay').style.display='flex';
+    }
+  }
+  function draw(){
+    ctx.fillStyle='#0a0a0f';ctx.fillRect(0,0,W,H);
+    board.forEach((r,ry)=>r.forEach((c,rx)=>{
+      if(c){ctx.fillStyle=colorBoard[ry][rx];ctx.fillRect(rx*BS+1,ry*BS+1,BS-2,BS-2);}
+    }));
+    cur.shape.forEach((r,ry)=>r.forEach((c,rx)=>{
+      if(c){ctx.fillStyle=cur.color;ctx.fillRect((cur.x+rx)*BS+1,(cur.y+ry)*BS+1,BS-2,BS-2);}
+    }));
+    ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font='11px sans-serif';
+    ctx.fillText(score,6,14);
+  }
+  function loop(ts){
+    if(!alive)return;
+    const dt=ts-lastTime;lastTime=ts;dropTimer+=dt;
+    if(dropTimer>dropInterval){
+      dropTimer=0;
+      if(valid(cur.shape,cur.x,cur.y+1))cur.y++;
+      else place();
+    }
+    draw();tetrisLoop=requestAnimationFrame(loop);
+  }
+  if(tetrisLoop)cancelAnimationFrame(tetrisLoop);
+  document.onkeydown=(e)=>{
+    if(e.key==='ArrowLeft'&&valid(cur.shape,cur.x-1,cur.y))cur.x--;
+    if(e.key==='ArrowRight'&&valid(cur.shape,cur.x+1,cur.y))cur.x++;
+    if(e.key==='ArrowDown'&&valid(cur.shape,cur.x,cur.y+1))cur.y++;
+    if(e.key==='ArrowUp'){
+      const rot=cur.shape[0].map((_,i)=>cur.shape.map(r=>r[i]).reverse());
+      if(valid(rot,cur.x,cur.y))cur.shape=rot;
+    }
+  };
+  tetrisLoop=requestAnimationFrame(loop);
+}
+
+/* ======================== BREAKOUT ======================== */
+let breakoutLoop;
+function startBreakout(){
+  document.getElementById('breakout-overlay').style.display='none';
+  const canvas=document.getElementById('breakout-canvas');
+  const ctx=canvas.getContext('2d');
+  const W=300,H=240;
+  const BRICK_COLS=8,BRICK_ROWS=4,BW=30,BH=12,BP=3;
+  const BRICK_COLORS=['#E24B4A','#D4537E','#FAC775','#97C459'];
+  let bricks=[];
+  function makeBricks(){
+    bricks=[];
+    for(let r=0;r<BRICK_ROWS;r++)for(let c=0;c<BRICK_COLS;c++)
+      bricks.push({x:c*(BW+BP)+BP,y:r*(BH+BP)+30,w:BW,h:BH,alive:true,color:BRICK_COLORS[r]});
+  }
+  makeBricks();
+  let paddle={x:W/2-30,y:H-20,w:60,h:8};
+  let ball={x:W/2,y:H-40,vx:2.5,vy:-3};
+  let score=0,lives=3,alive=true;
+  canvas.addEventListener('mousemove',e=>{
+    const rect=canvas.getBoundingClientRect();
+    const scale=W/rect.width;
+    paddle.x=Math.min(W-paddle.w,Math.max(0,(e.clientX-rect.left)*scale-paddle.w/2));
+  });
+  function draw(){
+    ctx.fillStyle='#0a0a0f';ctx.fillRect(0,0,W,H);
+    bricks.forEach(b=>{
+      if(!b.alive)return;
+      ctx.fillStyle=b.color;ctx.beginPath();ctx.roundRect(b.x,b.y,b.w,b.h,2);ctx.fill();
+    });
+    ctx.fillStyle='#7F77DD';ctx.beginPath();ctx.roundRect(paddle.x,paddle.y,paddle.w,paddle.h,4);ctx.fill();
+    ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(ball.x,ball.y,5,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font='11px sans-serif';
+    ctx.fillText('Score: '+score,6,14);
+    ctx.fillText('Lives: '+lives,W-56,14);
+  }
+  function tick(){
+    if(!alive)return;
+    ball.x+=ball.vx;ball.y+=ball.vy;
+    if(ball.x<5||ball.x>W-5)ball.vx*=-1;
+    if(ball.y<5)ball.vy*=-1;
+    if(ball.y>H){
+      lives--;
+      if(lives<=0){
+        alive=false;
+        if(score>breakoutBest){breakoutBest=score;document.getElementById('breakout-best').textContent=breakoutBest;updateTotal();}
+        document.getElementById('breakout-msg').textContent='Game over — '+score+' pts';
+        document.getElementById('breakout-sub').textContent='';
+        document.getElementById('breakout-overlay').style.display='flex';return;
+      }
+      ball={x:W/2,y:H-50,vx:2.5*(Math.random()>0.5?1:-1),vy:-3};
+    }
+    if(ball.y+5>paddle.y&&ball.y<paddle.y+paddle.h&&ball.x>paddle.x&&ball.x<paddle.x+paddle.w){
+      ball.vy=Math.abs(ball.vy)*-1;
+      ball.vx+=((ball.x-(paddle.x+paddle.w/2))/paddle.w)*3;
+    }
+    bricks.forEach(b=>{
+      if(!b.alive)return;
+      if(ball.x>b.x&&ball.x<b.x+b.w&&ball.y>b.y&&ball.y<b.y+b.h){
+        b.alive=false;score+=10;ball.vy*=-1;
+      }
+    });
+    if(bricks.every(b=>!b.alive)){makeBricks();ball.vy-=0.3;}
+    draw();breakoutLoop=requestAnimationFrame(tick);
+  }
+  document.onkeydown=(e)=>{
+    if(e.key==='ArrowLeft')paddle.x=Math.max(0,paddle.x-16);
+    if(e.key==='ArrowRight')paddle.x=Math.min(W-paddle.w,paddle.x+16);
+  };
+  if(breakoutLoop)cancelAnimationFrame(breakoutLoop);
+  breakoutLoop=requestAnimationFrame(tick);
+}
+</script>
